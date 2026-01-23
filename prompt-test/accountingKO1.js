@@ -45,7 +45,7 @@
 	/* --- Internal Helper Methods --- */
 
 	// Store reference to possibly-available ECMAScript 5 methods for later
-	var nativeMap = Array.prototype.map,
+	const nativeMap = Array.prototype.map,
 		nativeIsArray = Array.isArray,
 		toString = Object.prototype.toString;
 
@@ -78,7 +78,7 @@
 	 * Used for abstracting parameter handling from API methods
 	 */
 	function defaults(object, defs) {
-		var key;
+		let key;
 		object = object || {};
 		defs = defs || {};
 		// Iterate over object non-prototype properties:
@@ -98,7 +98,8 @@
 	 * Defers to native Array.map if available
 	 */
 	function map(obj, iterator, context) {
-		var results = [], i, j;
+		const results = [];
+		let i, j;
 
 		if (!obj) return results;
 
@@ -131,7 +132,7 @@
 	 * Either string or format.pos must contain "%v" (value) to be valid
 	 */
 	function checkCurrencyFormat(format) {
-		var defaults = lib.settings.currency.format;
+		const defaults = lib.settings.currency.format;
 
 		// Allow function as format parameter (should return string or object):
 		if ( typeof format === "function" ) format = format();
@@ -176,7 +177,7 @@
 	 *
 	 * Doesn't throw any errors (`NaN`s become 0) but this may change in future
 	 */
-	var unformat = lib.unformat = lib.parse = function(value, decimal) {
+	const unformat = lib.unformat = lib.parse = function(value, decimal) {
 		// Recursively unformat arrays:
 		if (isArray(value)) {
 			return map(value, function(val) {
@@ -194,7 +195,7 @@
 		decimal = decimal || lib.settings.number.decimal;
 
 		 // Build regex to strip out everything except digits, decimal point and minus sign:
-		var regex = new RegExp("[^0-9-" + decimal + "]", ["g"]),
+		const regex = new RegExp("[^0-9-" + decimal + "]", ["g"]),
 			unformatted = parseFloat(
 				("" + value)
 				.replace(/\((?=\d+)(.*)\)/, "-$1") // replace bracketed values with negatives
@@ -213,12 +214,12 @@
 	 * Fixes binary rounding issues (eg. (0.615).toFixed(2) === "0.61") that present
 	 * problems for accounting- and finance-related software.
 	 */
-	var toFixed = lib.toFixed = function(value, precision) {
+	const toFixed = lib.toFixed = function(value, precision) {
 		precision = checkPrecision(precision, lib.settings.number.precision);
 
-		var exponentialForm = Number(lib.unformat(value) + 'e' + precision);
-		var rounded = Math.round(exponentialForm);
-		var finalResult = Number(rounded + 'e-' + precision).toFixed(precision);
+		const exponentialForm = Number(lib.unformat(value) + 'e' + precision);
+		const rounded = Math.round(exponentialForm);
+		const finalResult = Number(rounded + 'e-' + precision).toFixed(precision);
 		return finalResult;
 	};
 
@@ -230,7 +231,7 @@
 	 * Localise by overriding the precision and thousand / decimal separators
 	 * 2nd parameter `precision` can be an object matching `settings.number`
 	 */
-	var formatNumber = lib.formatNumber = lib.format = function(number, precision, thousand, decimal) {
+	const formatNumber = lib.formatNumber = lib.format = function(number, precision, thousand, decimal) {
 		// Resursively format arrays:
 		if (isArray(number)) {
 			return map(number, function(val) {
@@ -242,7 +243,7 @@
 		number = unformat(number);
 
 		// Build options object from second param (if object) or all params, extending defaults:
-		var opts = defaults(
+		const opts = defaults(
 				(isObject(precision) ? precision : {
 					precision : precision,
 					thousand : thousand,
@@ -275,7 +276,7 @@
 	 *
 	 * To do: tidy up the parameters
 	 */
-	var formatMoney = lib.formatMoney = function(number, symbol, precision, thousand, decimal, format) {
+	const formatMoney = lib.formatMoney = function(number, symbol, precision, thousand, decimal, format) {
 		// Resursively format arrays:
 		if (isArray(number)) {
 			return map(number, function(val){
@@ -287,7 +288,7 @@
 		number = unformat(number);
 
 		// Build options object from second param (if object) or all params, extending defaults:
-		var opts = defaults(
+		const opts = defaults(
 				(isObject(symbol) ? symbol : {
 					symbol : symbol,
 					precision : precision,
@@ -325,7 +326,7 @@
 		if (!list || !isArray(list)) return [];
 
 		// Build options object from second param (if object) or all params, extending defaults:
-		var opts = defaults(
+		const opts = defaults(
 				(isObject(symbol) ? symbol : {
 					symbol : symbol,
 					precision : precision,
@@ -340,30 +341,29 @@
 			formats = checkCurrencyFormat(opts.format),
 
 			// Whether to pad at start of string or after currency symbol:
-			padAfterSymbol = formats.pos.indexOf("%s") < formats.pos.indexOf("%v") ? true : false,
+			padAfterSymbol = formats.pos.indexOf("%s") < formats.pos.indexOf("%v") ? true : false;
 
-			// Store value for the length of the longest string in the column:
-			maxLength = 0,
+		let maxLength = 0;
 
-			// Format the list according to options, store the length of the longest string:
-			formatted = map(list, function(val, i) {
-				if (isArray(val)) {
-					// Recursively format columns if list is a multi-dimensional array:
-					return lib.formatColumn(val, opts);
-				} else {
-					// Clean up the value
-					val = unformat(val);
+		// Format the list according to options, store the length of the longest string:
+		const formatted = map(list, function(val, i) {
+			if (isArray(val)) {
+				// Recursively format columns if list is a multi-dimensional array:
+				return lib.formatColumn(val, opts);
+			} else {
+				// Clean up the value
+				val = unformat(val);
 
-					// Choose which format to use for this value (pos, neg or zero):
-					var useFormat = val > 0 ? formats.pos : val < 0 ? formats.neg : formats.zero,
+				// Choose which format to use for this value (pos, neg or zero):
+				const useFormat = val > 0 ? formats.pos : val < 0 ? formats.neg : formats.zero,
 
-						// Format this value, push into formatted list and save the length:
-						fVal = useFormat.replace('%s', opts.symbol).replace('%v', formatNumber(Math.abs(val), checkPrecision(opts.precision), opts.thousand, opts.decimal));
+					// Format this value, push into formatted list and save the length:
+					fVal = useFormat.replace('%s', opts.symbol).replace('%v', formatNumber(Math.abs(val), checkPrecision(opts.precision), opts.thousand, opts.decimal));
 
-					if (fVal.length > maxLength) maxLength = fVal.length;
-					return fVal;
-				}
-			});
+				if (fVal.length > maxLength) maxLength = fVal.length;
+				return fVal;
+			}
+		});
 
 		// Pad each number in the list and send back the column of numbers:
 		return map(formatted, function(val, i) {
