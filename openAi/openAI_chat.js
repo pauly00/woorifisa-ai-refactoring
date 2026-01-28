@@ -38,15 +38,24 @@ async function handleChat(userInput) {
         const messages = [
             { 
                 role: "system", 
-                content: `너는 자바스크립트 리팩토링 전문가다. 
-                최우선 목표: 외부 공개 API/동작/출력/UMD 로딩(CommonJS/AMD/전역 window.accounting) 100% 동일 유지. 
-                금지: 공개 API 제거/이름 변경, UMD export/noConflict 로직 변경, 출력 문자열 변경.
-                출력: 설명 없이 순수 JS 코드만."`
-                
+                content: `
+                    You are an expert Code Refactoring Agent.
+                    Your objective is to modernize legacy ES5 code to professional ES6+ standards **without altering its behavior**.
+
+                    The Golden Rules (Non-negotiable):
+                    1. Black-box Equivalence: The external behavior (inputs, outputs, side effects, API surface) must remain mathematically identical to the original. Do not change any public API names, signatures, argument handling, defaults, or return values.
+                    2. Context Preservation: Do not change the binding of 'this' in public methods or alter the UMD/Module wrapper structure. Preserve the behavior of 'noConflict' and global exports.
+                    3. Output: Provide ONLY the raw JavaScript code string. Do not include explanations, comments, or markdown.
+
+                    Hard Rules:
+                    - Do not rename/remove any public API or change exports/global name.
+                    - Do not change numeric logic, formatting, rounding, regex, or default settings values**.
+                    - No new dependencies should be introduced.
+                    `
             },
             { 
                 role: "user", 
-                content: `요구사항: ${userInput}\n\n대상 코드:\n${sourceCode}` 
+                content: `Requirements: ${userInput}\n\nTarget code:\n${sourceCode}` 
             }
         ];
 
@@ -63,23 +72,59 @@ async function handleChat(userInput) {
         console.error('❌ 오류 발생:', err.message);
     }
     
-    askQuestion(); // 다시 입력 대기
+    startMultilineInput(); // 다시 입력 대기
 }
 
-function askQuestion() {
-    rl.question('\n💬 리팩토링 명령을 입력하세요 (종료: exit): ', (input) => {
-        if (input.toLowerCase() === 'exit') {
-            console.log('👋 프로그램을 종료합니다.');
-            rl.close();
-            return;
-        }
-        handleChat(input);
-    });
+function startMultilineInput() {
+  console.log('\n💬 리팩토링 명령을 여러 줄로 입력하세요.');
+  console.log('   - 전송: .send');
+  console.log('   - 종료: exit');
+  console.log('----------------------------------------');
+
+  const lines = [];
+
+  rl.setPrompt('> ');
+  rl.prompt();
+
+  const onLine = (line) => {
+    const trimmed = line.trim();
+
+    // 아무 내용 없이 exit 입력 시 종료
+    if (lines.length === 0 && trimmed.toLowerCase() === 'exit') {
+      console.log('👋 프로그램을 종료합니다.');
+      rl.removeListener('line', onLine);
+      rl.close();
+      return;
+    }
+
+    // 전송 트리거
+    if (trimmed === '.send') {
+      rl.removeListener('line', onLine);
+
+      const userInput = lines.join('\n').trim();
+      if (!userInput) {
+        // 빈 입력이면 다시 받기
+        startMultilineInput();
+        return;
+      }
+
+      handleChat(userInput);
+      return;
+    }
+
+    // 일반 라인 누적
+    lines.push(line);
+    rl.prompt();
+  };
+
+  // line 이벤트를 이번 입력 세션에서만 사용
+  rl.on('line', onLine);
 }
 
 console.log('🚀 accounting.js 대화형 리팩토링 도구 시작!');
 if (!OpenaiKey) {
-    console.error('❌ API 키가 없습니다. .env 파일을 확인하세요.');
-    process.exit(1);
+  console.error('❌ API 키가 없습니다. .env 파일을 확인하세요.');
+  process.exit(1);
 }
-askQuestion();
+
+startMultilineInput();

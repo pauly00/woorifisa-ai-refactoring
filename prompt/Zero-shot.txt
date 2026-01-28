@@ -1,0 +1,1 @@
+Refator this code to ES6

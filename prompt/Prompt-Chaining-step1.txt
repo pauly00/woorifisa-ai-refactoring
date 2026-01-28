@@ -1,0 +1,12 @@
+Step 1: Apply modern variable declaration standards to the legacy code
+
+Style Guidelines:
+1. Enforce "One Variable Per Line":
+- Declare each variable on its own line to improve readability and make git diffs clearer.
+2. Block-Scoping:
+- Replace `var` with `const` by default. Use `let` only if the variable is visibly reassigned later.
+3. Scope Safety:
+- Ensure these changes do not violate the original variable hoisting rules or closure behaviors.
+- Avoid using let or const in ways that change how the code originally works with variable hoisting.
+
+Output: Raw JS code only.

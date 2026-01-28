@@ -1,0 +1,19 @@
+Please refactor this code to ES6 following these steps explicitly (Chain of Thought):
+
+1. Analyze the Code Structure:
+   - Identify the UMD wrapper and ensure it remains intact.
+   - Analyze how variables are declared ('var') and identify their scope to safely convert to 'const' or 'let'.
+   - Identify internal helper functions vs. public API methods.
+
+2. Plan the Refactoring:
+   - Decide where to use Arrow Functions (be careful with 'this' binding and 'arguments' object).
+   - Plan to replace 'arguments' with Rest Parameters ('...args') where possible.
+   - Plan to introduce Default Parameters instead of internal checks like 'param = param || default'.
+
+3. Execute Refactoring:
+   - Rewrite the code based on your plan.
+   - Ensure that variable hoisting relied upon in ES5 is handled correctly in ES6 block scoping.
+
+4. Self-Review:
+   - Review the generated code against the original logic.
+   - Confirm that no public signatures have changed.

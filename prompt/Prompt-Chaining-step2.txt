@@ -1,0 +1,13 @@
+Step 2: Modernize implementation patterns to improve semantics and readability
+
+Refactoring Principles:
+1. Enforce Type Semantics:
+   - Look for places where one data type is instantiated solely to manipulate another.
+   - Replace these patterns with direct Native Prototype Methods of the target type .
+2. Declarative Signatures:
+   - Move defensive logic (like checking for undefined arguments) out of the function body and into the function signature using default parameters.
+   - This improves readability and clarity of the function's intent.
+3. Arrow Functions:
+   - limited arrows for direct inline callbacks ONLY when the callback does NOT use this, arguments, or any provided context binding
+
+Output: Raw JS code only.
