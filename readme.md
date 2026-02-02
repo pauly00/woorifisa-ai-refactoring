@@ -19,7 +19,7 @@ FISA 프론트엔드 기술 세미나에서 진행한 **AI를 활용한 로직 �
 |:-:|:-:|:-:|:-:|
 |**박지은(팀장)**<br/>[@jeeneep](https://github.com/jeeneep)|**고희연**<br/>[@HeeYeon-Ko](https://github.com/HeeYeon-Ko)|**김시온**<br/>[@noiskk](https://github.com/noiskk)|**류경록**<br/>[@pauly00](https://github.com/pauly00)|
 
-**대상 라이브러리:** `accounting.js` (JavaScript)
+**대상 라이브러리:** `accounting.js`
 https://github.com/openexchangerates/accounting.js
 
 **핵심 목표:**
@@ -75,9 +75,9 @@ Result: 환경 탐지 코드(Node.js/AMD)를 제외한 실질적 비즈니스 �
 단순 요청보다 정교한 프롬프트 기법이 리팩토링 품질에 미치는 영향을 비교 실험했습니다.
 
 | 기법 | 설명 | 결과 |
-| --- | --- | --- |
-| **CoT (Chain of Thought)** | AI에게 생각의 과정을 단계별로 서술하게 한 뒤 코드 수정 | 논리적 흐름은 좋으나, 코드 구현 단계에서 종종 로직 누락 발생 |
-| **Prompt Chaining** | 역할 부여 -> 분석 -> 계획 -> 구현 -> 검증 단계를 끊어서 대화형으로 진행 | **가장 안정적인 결과 도출.** 단계별 피드백이 가능하여 환각(Hallucination) 감소 |
+| :--- | :--- | :--- |
+| **CoT (Chain of Thought)** | **단일 프롬프트** 내에서 4단계(분석-계획-구현-검증) 사고 과정을 한 번에 수행하도록 요청 | 논리적 흐름은 갖추었으나, 한 번에 긴 코드를 생성하는 과정에서 세부 로직 누락 발생 |
+| **Prompt Chaining** | **관심사 분리** 원칙에 따라 작업을 2단계로 쪼개어 순차적으로 요청 | **가장 안정적인 결과 도출.** 각 단계별로 명확한 목표에만 집중하게 하여 환각 감소 |
 
 <br>
 
