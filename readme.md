@@ -10,14 +10,9 @@ FISA 프론트엔드 기술 세미나에서 진행한 **AI를 활용한 로직 �
 
 <br>
 
-## 📌 Overview (개요)
+## 📌 개요
 
 **주제:** AI를 활용한 레거시 코드 (로직 손실 없는) 리팩토링 
-
-### Team
-|<img src="https://github.com/jeeneep.png" width="150" height="150"/>|<img src="https://github.com/HeeYeon-Ko.png" width="150" height="150"/>|<img src="https://github.com/noiskk.png" width="150" height="150"/>|<img src="https://github.com/pauly00.png" width="150" height="150"/>|
-|:-:|:-:|:-:|:-:|
-|**박지은(팀장)**<br/>[@jeeneep](https://github.com/jeeneep)|**고희연**<br/>[@HeeYeon-Ko](https://github.com/HeeYeon-Ko)|**김시온**<br/>[@noiskk](https://github.com/noiskk)|**류경록**<br/>[@pauly00](https://github.com/pauly00)|
 
 **대상 라이브러리:** `accounting.js`
 https://github.com/openexchangerates/accounting.js
@@ -30,7 +25,7 @@ https://github.com/openexchangerates/accounting.js
 
 <br>
 
-## 🧪 방법론
+## 🧪 리팩토링 과정
 
 ### 1. 안전장치 확보: 테스트 코드
 
@@ -40,35 +35,21 @@ AI가 코드를 수정한 후, 테스트를 통과하지 못하면 실패로 간
 
 <br>
 
-🔍 기존 문제점 분석
+**문제점: 낮은 신뢰도 (Branch Coverage 77.22%)**
+기존 테스트는 Happy Path(정상 케이스) 위주로 작성되어, 재귀 호출, 구형 브라우저 폴리필(Fallback), 예외 처리 등 핵심 분기의 절반 이상이 검증되지 않은 상태였습니다.
 
-기존 methods.js 테스트는 Happy Path(정상적인 입력과 기대되는 출력) 위주로 작성되어 있어, 리팩토링 시 잠재적 결함을 잡아내기에 부족했습니다. 
+**개선 전략**<br>
+단순 수치 달성이 아닌, 비즈니스 로직의 완결성을 목표로 커버리지를 확보했습니다.
 
-* 낮은 커버리지: 핵심 로직의 **Branch Coverage가 약 49.5%**에 불과해 분기 절반이 검증되지 않음. 
+- **재귀**: 다차원 배열(["$1", "$2"])을 주입하여 내부 재귀 호출 로직 검증
 
-* 재귀 로직 미검증: 배열 데이터 처리 시 작동하는 내부 재귀 호출(unformat, formatMoney 배열 입력) 분기가 실행되지 않음. 
+- **폴리필**: 유사 배열 객체(Array-like)를 활용해 최신 환경에서도 구형 브라우저용 반복문 강제 실행
 
-* 환경 의존적 코드 방치: 최신 브라우저(Chrome Headless) 환경에서는 구형 브라우저용 폴리필(Fallback) 코드가 실행되지 않는 기술적 제약 존재. 
+- **방어 로직**: null 및 잘못된 옵션 값을 주입하여 Fail-safe 로직 작동 확인
 
-* 방어 로직 미비: 잘못된 옵션이나 null 값 입력 시의 예외 처리 로직(Fail-safe) 검증 부재. 
-
-<br>
-
-📈 커버리지 개선 기법 (Implementation)
-
-단순한 수치 달성이 아닌, 실제 비즈니스 로직의 완결성을 목표로 다음과 같은 테크닉을 적용했습니다.
-
-| 검증 영역 | 해결 전략 및 기법 (Technique) | 개선 효과 |
-| :--- | :--- | :--- |
-| **재귀 동작**<br>(Recursion) | **다차원 배열 주입**<br>`unformat(["$1", "$2"])`와 같이 배열을 인자로 넘겨 내부 재귀 호출을 강제 실행 | 대량 데이터 처리 로직의 **확장성 및 안정성** 검증 |
-| **내부 폴리필**<br>(Fallback Loop) | **유사 배열 객체(Array-like) 활용**<br>네이티브 `.map`을 제거한 객체를 주입하여, 최신 환경에서도 구형 브라우저용 `for` 루프가 돌도록 유도 | 환경 제약을 뛰어넘는 **기술적 검증** 달성 |
-| **방어 로직**<br>(Edge Cases) | **에러 유발(Error Injection)**<br>잘못된 포맷 옵션, `null` 데이터 등을 의도적으로 주입하여 기본값(Default) 복구 로직 확인 | 예상치 못한 장애 상황에 대한 **Fail-safe** 확보 |
-
-
-Result: 환경 탐지 코드(Node.js/AMD)를 제외한 실질적 비즈니스 로직 100% 검증(Line Coverage ~94%) 달성
+결과: 환경 설정 코드를 제외한 실질적 비즈니스 로직 Line Coverage 94% 달성 (검증 사각지대 해소)
 
 <br>
-
 
 ### 2. 프롬프트 엔지니어링 실험
 
@@ -132,13 +113,18 @@ Refactoring Principles:
 
 <br>
 
-## 📊 결과 및 인사이트 (Results & Insights)
+## 📊 결과 및 인사이트
 
-* **안정성 확보:** Iterative Prompting 방식을 통해 기존 기능의 100% 정상 동작을 검증했습니다.
+* **안정성 확보:** Prompt Chaining 방식을 통해 안정적인 리팩토링 후 기존 기능의 100% 정상 동작을 검증했습니다.
   
-* **개발자의 역할 변화:** AI가 코드를 작성하더라도, **"무엇을(What) 리팩토링할 것인가"**를 정의하고 **"결과가 맞는지(Verification)"** 판단하는 개발자의 역량이 더욱 중요함을 확인했습니다.
-  
-* **한계:** 매우 긴 의존성을 가진 스파게티 코드의 경우, AI의 컨텍스트 윈도우 한계로 인해 부분적 리팩토링만 가능한 경우가 있었습니다.
+* **개발자의 역할 변화:** AI가 코드를 작성하더라도, "무엇을(What) 리팩토링할 것인가"를 정의하고 "결과가 맞는지(Verification)" 판단하는 개발자의 역량이 더욱 중요함을 확인했습니다.
+
+<br>
+
+## Team
+|<img src="https://github.com/jeeneep.png" width="80" height="80"/>|<img src="https://github.com/HeeYeon-Ko.png" width="80" height="80"/>|<img src="https://github.com/noiskk.png" width="80" height="80"/>|<img src="https://github.com/pauly00.png" width="80" height="80"/>|
+|:-:|:-:|:-:|:-:|
+|**박지은(팀장)**<br/>[@jeeneep](https://github.com/jeeneep)|**고희연**<br/>[@HeeYeon-Ko](https://github.com/HeeYeon-Ko)|**김시온**<br/>[@noiskk](https://github.com/noiskk)|**류경록**<br/>[@pauly00](https://github.com/pauly00)|
 
 <br>
 
