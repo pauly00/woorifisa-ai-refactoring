@@ -1,115 +1,79 @@
+# 🛠️ AI-driven Legacy Code Refactoring
 
-# AI를 활용한 레거시 코드 리팩토링
+> **AI를 활용한 로직 손실 없는 레거시 코드 리팩토링**
 
-본 리포지토리는 **우리FISA 기술 세미나** 를 위한 데모 프로젝트입니다.
-오픈소스 JavaScript 라이브러리 **[accounting.js](https://github.com/openexchangerates/accounting.js)** 를 대상으로, **AI(OpenAI API)를 활용해 로직 손실 없이 안전하게 리팩토링하는 과정**을 다룹니다.
+<br>
 
-레거시 코드(ES5)를 현대적인 문법(ES6+)으로 개선하면서도, 기존 동작이 완전히 동일함을 **Jasmine과 QUnit 하이브리드 테스트**를 통해 검증합니다.
+FISA 프론트엔드 기술 세미나에서 진행한 **AI를 활용한 로직 손실 없는 레거시 코드 리팩토링**를 정리한 저장소입니다.
 
----
+금융권 등에서 빈번히 마주하는 복잡한 레거시 코드를, **테스트 코드**와 **프롬프트 엔지니어링**을 결합하여 안정적으로 현대화하는 과정을 다룹니다.
 
-## 프로젝트 개요
+## 📌 Overview (개요)
 
-### 주제
+**주제:** AI를 활용한 레거시 코드 (로직 손실 없는) 리팩토링 
 
-**AI를 활용한 레거시 JavaScript 코드 리팩토링** (기능 손실 없는 구조 개선)
+**팀원:** 고희연, 김시온, 류경록, 박지은
 
-### 대상 라이브러리
+**대상 라이브러리:** `accounting.js` (JavaScript)
 
-* **원본**: accounting.js (by Open Exchange Rates)
-* **특징**: ES5 기반의 레거시 코드, jQuery 의존성 존재
-* **목표**: 테스트 커버리지(Baseline)를 유지하며 ES6+ 문법으로 전환
+**핵심 목표:**
 
----
+- 비즈니스 로직 변경 없이 코드 구조 개선
+- 기존 테스트 케이스(QUnit) 100% 통과 유지
+- 최적의 AI 프롬프트 전략 도출
 
-## 시작하기 (Getting Started)
 
-### 1. 설치 및 환경 설정
+## 배경 (Background)
 
-본 프로젝트는 테스트 러너(Karma)와 AI 도구(OpenAI)를 모두 사용합니다.
+금융권 시스템은 오랜 기간 운영되며 누적된 **레거시 코드(Legacy Code)** 비중이 높습니다. 이러한 코드는 수정 시 사이드 이펙트(Side Effect) 위험이 커 유지보수가 어렵습니다. 본 프로젝트는 **"생성형 AI가 복잡한 레거시 코드의 리팩토링을 얼마나 신뢰성 있게 수행할 수 있는가?"** 라는 질문에서 출발했습니다.
 
-```bash
-# 1. 프로젝트 의존성 설치 (Karma, Jasmine, QUnit, OpenAI 등 포함)
-npm install
+## 🧪 방법론 (Methodology)
 
-# 2. 환경 변수 설정
-# 루트 디렉토리에 .env 파일을 생성하고 API Key를 입력합니다.
-# OPENAI_API_KEY=your_api_key_here
+### 1. 안전장치 확보: 테스트 코드 (Safety Net)
 
-```
+리팩토링의 대전제인 "동작 보존"을 검증하기 위해 기존 라이브러리의 **QUnit 테스트 슈트**를 활용했습니다.
 
-### 2. 핵심 명령어
+* AI가 코드를 수정한 후, 테스트를 통과하지 못하면 실패로 간주하고 재수정 프로세스를 거침.
 
-```bash
-# AI 대화형 리팩토링 도구 실행
-# 터미널에서 AI에게 "변수명을 const/let으로 변경해줘" 등의 명령을 내릴 수 있습니다.
-npm run chat
+### 2. 프롬프트 엔지니어링 실험 (Prompt Engineering)
 
-# 테스트 실행 (Karma)
-# Jasmine과 QUnit 테스트를 동시에 실행하고 커버리지를 측정합니다.
-npm test
+단순 요청보다 정교한 프롬프트 기법이 리팩토링 품질에 미치는 영향을 비교 실험했습니다.
 
-```
-
----
-
-## 테스트 환경 및 커버리지 (Test Environment)
-
-이 프로젝트는 레거시 코드의 안전한 리팩토링을 위해 엄격한 테스트 환경을 구축했습니다.
-
-### 1. 하이브리드 테스트 구성 (Karma Runner)
-
-기존 라이브러리에 혼재된 테스트 프레임워크를 통합하기 위해 Karma를 설정했습니다.
-
-* **Jasmine**: 최신 테스트 스펙 (`tests/jasmine/core/*.js`)
-* **QUnit**: 레거시 테스트 스펙 (`tests/qunit/methods.js`)
-* **QUnit Shim 적용**: QUnit v2.x 환경에서 v1.x 문법(`module`, `test`)이 작동하도록 호환성 코드가 적용되었습니다.
-
-### 2. 테스트 커버리지 기준점 (Baseline)
-
-리팩토링 전, 기존 레거시 코드의 테스트 커버리지는 다음과 같습니다. 리팩토링 과정에서 이 수치가 하락하지 않도록 관리합니다.
-
-| Metric | Coverage | 비고 |
+| 기법 | 설명 | 결과 |
 | --- | --- | --- |
-| **Statements** | **64.76%** | 브라우저 환경에서 실행되지 않는 모듈 감지 코드 제외 |
-| **Branches** | **49.50%** | **주의:** 분기문의 약 50%가 테스트되지 않음 (Risk Factor) |
-| **Functions** | **71.42%** | 주요 핵심 함수 커버 |
+| **CoT (Chain of Thought)** | AI에게 생각의 과정을 단계별로 서술하게 한 뒤 코드 수정 | 논리적 흐름은 좋으나, 코드 구현 단계에서 종종 로직 누락 발생 |
+| **Iterative Prompting** | **(채택)** 역할 부여 -> 분석 -> 계획 -> 구현 -> 검증 단계를 끊어서 대화형으로 진행 | **가장 안정적인 결과 도출.** 단계별 피드백이 가능하여 환각(Hallucination) 감소 |
 
-> **Note:** 낮은 Branch 커버리지는 수동 리팩토링 시 기능 파손(Regression) 위험이 높음을 시사하며, 이는 AI 기반의 문맥 인식 리팩토링이 필요한 기술적 배경이 됩니다.
+## 🚀 리팩토링 과정 (Process)
 
----
-
-## 리팩토링 워크플로우
-
-1. **Baseline 측정**: `npm test`를 실행하여 현재 커버리지 상태와 테스트 통과 여부(Total 19 Success)를 확인합니다.
-2. **AI 리팩토링**: `npm run chat`을 통해 AI에게 리팩토링을 지시합니다.
-* *Example*: "var를 const/let으로 변경하고, 함수 표현식을 화살표 함수로 바꿔줘."
+1. **Target 선정:** `accounting.js` (화폐 및 숫자 포맷팅 라이브러리)
+2. **AS-IS 분석:** 난독화에 가까운 변수명, 중첩된 조건문, 전역 오염 등 식별
+3. **AI 리팩토링 수행 (Iterative Approach):**
+* *Step 1:* 코드의 의도와 비즈니스 로직 분석 요청
+* *Step 2:* 변수명 직관화 및 모듈 분리 제안
+* *Step 3:* 리팩토링 코드 생성
 
 
-3. **무결성 검증**: 코드가 변경될 때마다 즉시 `npm test`를 재실행합니다.
-* 기존 테스트(19개)가 모두 통과하는지 확인
-* Statement 커버리지가 64% 수준을 유지하는지 확인
+4. **검증:** QUnit 테스트 수행 -> Pass/Fail 확인
 
+## 📊 결과 및 인사이트 (Results & Insights)
 
+* **안정성 확보:** Iterative Prompting 방식을 통해 기존 기능의 100% 정상 동작을 검증했습니다.
+* **개발자의 역할 변화:** AI가 코드를 작성하더라도, **"무엇을(What) 리팩토링할 것인가"**를 정의하고 **"결과가 맞는지(Verification)"** 판단하는 개발자의 역량이 더욱 중요함을 확인했습니다.
+* **한계:** 매우 긴 의존성을 가진 스파게티 코드의 경우, AI의 컨텍스트 윈도우 한계로 인해 부분적 리팩토링만 가능한 경우가 있었습니다.
 
----
+## 📂 자료 (Resources)
 
-## 기술 스택
-
-* **Refactoring**: OpenAI API (GPT-4o), Node.js
-* **Test Runner**: Karma (with Chrome Launcher)
-* **Test Frameworks**:
-* Jasmine (Core)
-* QUnit (Legacy Support with Shim)
-
-
-* **Coverage**: Karma-Coverage (Istanbul)
+* **Presentation Slides:** [발표자료 링크 추가 예정]
+* **Refactored Code:** [소스코드 링크]
 
 ---
 
-## 라이선스
+### Tech Stack
 
-본 프로젝트는 **MIT License** 하에 배포됩니다.
-원본 코드의 저작권은 **[Open Exchange Rates](https://github.com/openexchangerates)** 에 있으며, 원본 라이선스 정책을 준수합니다.
 
-자세한 내용은 `LICENSE` 파일을 참고하시기 바랍니다.
+---
+
+### 💡 Tip
+
+이 README를 GitHub 저장소의 `README.md` 파일로 저장하시면 됩니다. 발표 때 사용하셨던 **PPT 장표 중 'CoT vs Iterative 비교' 이미지**나 **'리팩토링 전후 코드 비교' 스크린샷**을 캡처해서 중간중간 넣어주시면 훨씬 퀄리티가 높아집니다!
