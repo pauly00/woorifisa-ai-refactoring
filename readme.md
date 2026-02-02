@@ -8,11 +8,13 @@ FISA 프론트엔드 기술 세미나에서 진행한 **AI를 활용한 로직 �
 
 금융권 등에서 빈번히 마주하는 복잡한 레거시 코드를, **테스트 코드**와 **프롬프트 엔지니어링**을 결합하여 안정적으로 현대화하는 과정을 다룹니다.
 
+<br>
+
 ## 📌 Overview (개요)
 
 **주제:** AI를 활용한 레거시 코드 (로직 손실 없는) 리팩토링 
 
-**팀원:** 고희연, 김시온, 류경록, 박지은
+**팀원:** 박지은(팀장), 고희연, 김시온, 류경록
 
 **대상 라이브러리:** `accounting.js` (JavaScript)
 
@@ -22,39 +24,77 @@ FISA 프론트엔드 기술 세미나에서 진행한 **AI를 활용한 로직 �
 - 기존 테스트 케이스(QUnit) 100% 통과 유지
 - 최적의 AI 프롬프트 전략 도출
 
+<br>
 
-## 배경 (Background)
+## 🧪 방법론
 
-금융권 시스템은 오랜 기간 운영되며 누적된 **레거시 코드(Legacy Code)** 비중이 높습니다. 이러한 코드는 수정 시 사이드 이펙트(Side Effect) 위험이 커 유지보수가 어렵습니다. 본 프로젝트는 **"생성형 AI가 복잡한 레거시 코드의 리팩토링을 얼마나 신뢰성 있게 수행할 수 있는가?"** 라는 질문에서 출발했습니다.
-
-## 🧪 방법론 (Methodology)
-
-### 1. 안전장치 확보: 테스트 코드 (Safety Net)
+### 1. 안전장치 확보: 테스트 코드
 
 리팩토링의 대전제인 "동작 보존"을 검증하기 위해 기존 라이브러리의 **QUnit 테스트 슈트**를 활용했습니다.
 
 * AI가 코드를 수정한 후, 테스트를 통과하지 못하면 실패로 간주하고 재수정 프로세스를 거침.
 
-### 2. 프롬프트 엔지니어링 실험 (Prompt Engineering)
+### 2. 프롬프트 엔지니어링 실험
 
 단순 요청보다 정교한 프롬프트 기법이 리팩토링 품질에 미치는 영향을 비교 실험했습니다.
 
 | 기법 | 설명 | 결과 |
 | --- | --- | --- |
 | **CoT (Chain of Thought)** | AI에게 생각의 과정을 단계별로 서술하게 한 뒤 코드 수정 | 논리적 흐름은 좋으나, 코드 구현 단계에서 종종 로직 누락 발생 |
-| **Iterative Prompting** | **(채택)** 역할 부여 -> 분석 -> 계획 -> 구현 -> 검증 단계를 끊어서 대화형으로 진행 | **가장 안정적인 결과 도출.** 단계별 피드백이 가능하여 환각(Hallucination) 감소 |
+| **Prompt Chaining** | 역할 부여 -> 분석 -> 계획 -> 구현 -> 검증 단계를 끊어서 대화형으로 진행 | **가장 안정적인 결과 도출.** 단계별 피드백이 가능하여 환각(Hallucination) 감소 |
 
-## 🚀 리팩토링 과정 (Process)
+<br>
 
-1. **Target 선정:** `accounting.js` (화폐 및 숫자 포맷팅 라이브러리)
-2. **AS-IS 분석:** 난독화에 가까운 변수명, 중첩된 조건문, 전역 오염 등 식별
-3. **AI 리팩토링 수행 (Iterative Approach):**
-* *Step 1:* 코드의 의도와 비즈니스 로직 분석 요청
-* *Step 2:* 변수명 직관화 및 모듈 분리 제안
-* *Step 3:* 리팩토링 코드 생성
+### 3. 최종 프롬프트
+
+```HCL
+
+## 시스템 메시지
+You are an expert Code Refactoring Agent.
+Your objective is to modernize legacy ES5 code to professional ES6+ standards **without altering its behavior**.
+
+The Golden Rules (Non-negotiable):
+1. Black-box Equivalence: The external behavior (inputs, outputs, side effects, API surface) must remain mathematically identical to the original. Do not change any public API names, signatures, argument handling, defaults, or return values.
+2. Context Preservation: Do not change the binding of 'this' in public methods or alter the UMD/Module wrapper structure. Preserve the behavior of 'noConflic' and global exports.
+3. Output: Provide ONLY the raw JavaScript code string. Do not include explanations, comments, or markdown.
+
+Hard Rules:
+- Do not rename/remove any public API or change exports/global name.
+- Do not change numeric logic, formatting, rounding, regex, or default settings values.
+- No new dependencies should be introduced.
 
 
-4. **검증:** QUnit 테스트 수행 -> Pass/Fail 확인
+
+## 코드의 동작은 그대로 둔 채, 선언 방식만 현대화
+Step 1: Apply modern variable declaration standards to the legacy code
+
+Style Guidelines:
+1. Enforce "One Variable Per Line":
+- Declare each variable on its own line to improve readability and make git diffs clearer.
+2. Block-Scoping:
+- Replace `var` with `const` by default. Use `let` only if the variable is visibly reassigned later.
+3. Scope Safety:
+- Ensure these changes do not violate the original variable hoisting rules or closure behaviors.
+- Avoid using let or const in ways that change how the code originally works with variable hoisting.
+
+
+
+## 의미와 표현력 개선 (최신 메서드 사용)
+Step 2: Modernize implementation patterns to improve semantics and readability
+
+Refactoring Principles:
+1. Enforce Type Semantics:
+   - Look for places where one data type is instantiated solely to manipulate another.
+   - Replace these patterns with direct Native Prototype Methods of the target type .
+2. Declarative Signatures:
+   - Move defensive logic (like checking for undefined arguments) out of the function body and into the function signature using default parameters.
+   - This improves readability and clarity of the function's intent.
+3. Arrow Functions:
+   - limited arrows for direct inline callbacks ONLY when the callback does NOT use this, arguments, or any provided context binding
+
+```
+
+<br>
 
 ## 📊 결과 및 인사이트 (Results & Insights)
 
@@ -62,18 +102,9 @@ FISA 프론트엔드 기술 세미나에서 진행한 **AI를 활용한 로직 �
 * **개발자의 역할 변화:** AI가 코드를 작성하더라도, **"무엇을(What) 리팩토링할 것인가"**를 정의하고 **"결과가 맞는지(Verification)"** 판단하는 개발자의 역량이 더욱 중요함을 확인했습니다.
 * **한계:** 매우 긴 의존성을 가진 스파게티 코드의 경우, AI의 컨텍스트 윈도우 한계로 인해 부분적 리팩토링만 가능한 경우가 있었습니다.
 
+* <br>
+
 ## 📂 자료 (Resources)
 
 * **Presentation Slides:** [발표자료 링크 추가 예정]
 * **Refactored Code:** [소스코드 링크]
-
----
-
-### Tech Stack
-
-
----
-
-### 💡 Tip
-
-이 README를 GitHub 저장소의 `README.md` 파일로 저장하시면 됩니다. 발표 때 사용하셨던 **PPT 장표 중 'CoT vs Iterative 비교' 이미지**나 **'리팩토링 전후 코드 비교' 스크린샷**을 캡처해서 중간중간 넣어주시면 훨씬 퀄리티가 높아집니다!
