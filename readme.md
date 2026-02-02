@@ -12,12 +12,14 @@ FISA 프론트엔드 기술 세미나에서 진행한 **AI를 활용한 로직 �
 
 ## 📌 개요
 
-**주제:** AI를 활용한 레거시 코드 (로직 손실 없는) 리팩토링 
+**주제** 
+- AI를 활용한 레거시 코드 (로직 손실 없는) 리팩토링 
 
-**대상 라이브러리:** `accounting.js`
-https://github.com/openexchangerates/accounting.js
+**대상 라이브러리** 
+- `accounting.js`
+- https://github.com/openexchangerates/accounting.js
 
-**핵심 목표:**
+**핵심 목표**
 
 - 비즈니스 로직 변경 없이 코드 구조 개선
 - 기존 테스트 케이스(QUnit) 100% 통과 유지
@@ -35,19 +37,21 @@ AI가 코드를 수정한 후, 테스트를 통과하지 못하면 실패로 간
 
 <br>
 
-**문제점: 낮은 신뢰도 (Branch Coverage 77.22%)**
-기존 테스트는 Happy Path(정상 케이스) 위주로 작성되어, 재귀 호출, 구형 브라우저 폴리필(Fallback), 예외 처리 등 핵심 분기의 절반 이상이 검증되지 않은 상태였습니다.
+**문제점**
+- 낮은 신뢰도 (Branch Coverage 77.22%)
+- 재귀 호출, 구형 브라우저 폴리필(Fallback), 예외 처리 등 핵심 분기의 절반 이상이 검증되지 않은 상태
 
-**개선 전략**<br>
-단순 수치 달성이 아닌, 비즈니스 로직의 완결성을 목표로 커버리지를 확보했습니다.
+**개선 전략**
+- 단순 수치 달성이 아닌, 비즈니스 로직의 완결성을 목표로 커버리지를 확보
 
-- **재귀**: 다차원 배열(["$1", "$2"])을 주입하여 내부 재귀 호출 로직 검증
+   - **재귀**: 다차원 배열(["$1", "$2"])을 주입하여 내부 재귀 호출 로직 검증
 
-- **폴리필**: 유사 배열 객체(Array-like)를 활용해 최신 환경에서도 구형 브라우저용 반복문 강제 실행
+   - **폴리필**: 유사 배열 객체(Array-like)를 활용해 최신 환경에서도 구형 브라우저용 반복문 강제 실행
 
-- **방어 로직**: null 및 잘못된 옵션 값을 주입하여 Fail-safe 로직 작동 확인
+   - **방어 로직**: null 및 잘못된 옵션 값을 주입하여 Fail-safe 로직 작동 확인
 
-결과: 환경 설정 코드를 제외한 실질적 비즈니스 로직 Line Coverage 94% 달성 (검증 사각지대 해소)
+**결과**
+- 환경 설정 코드를 제외한 실질적 비즈니스 로직 Line Coverage 94% 달성 (검증 사각지대 해소)
 
 <br>
 
@@ -130,7 +134,8 @@ Refactoring Principles:
 
 ## 📂 자료 (Resources)
 
-* **Presentation Slides:** https://www.canva.com/design/DAG_O9q7Kz0/qoN2PlApPhPXvzHQyFQjFQ/edit?utm_content=DA[…]m_campaign=designshare&utm_medium=link2&utm_source=sharebutton
+* **Presentation Slides** <br>
+  https://www.canva.com/design/DAG_O9q7Kz0/qoN2PlApPhPXvzHQyFQjFQ/edit?utm_content=DA[…]m_campaign=designshare&utm_medium=link2&utm_source=sharebutton
 
 
 
