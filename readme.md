@@ -14,7 +14,10 @@ FISA 프론트엔드 기술 세미나에서 진행한 **AI를 활용한 로직 �
 
 **주제:** AI를 활용한 레거시 코드 (로직 손실 없는) 리팩토링 
 
-**팀원:** 박지은(팀장), 고희연, 김시온, 류경록
+### Team
+|<img src="https://github.com/jeeneep.png" width="150" height="150"/>|<img src="https://github.com/HeeYeon-Ko.png" width="150" height="150"/>|<img src="https://github.com/noiskk.png" width="150" height="150"/>|<img src="https://github.com/pauly00.png" width="150" height="150"/>|
+|:-:|:-:|:-:|:-:|
+|**박지은(팀장)**<br/>[@jeeneep](https://github.com/jeeneep)|**고희연**<br/>[@HeeYeon-Ko](https://github.com/HeeYeon-Ko)|**김시온**<br/>[@noiskk](https://github.com/noiskk)|**류경록**<br/>[@pauly00](https://github.com/pauly00)|
 
 **대상 라이브러리:** `accounting.js` (JavaScript)
 https://github.com/openexchangerates/accounting.js
